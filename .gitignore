@@ -1,0 +1,14 @@
+# Ignore compiled output and charts
+target/
+
+# Ignore temp files
+Scratches and Consoles/
+
+# Ignore IDE files
+.idea/
+*.iml
+*.iws
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
