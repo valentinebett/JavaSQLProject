@@ -14,65 +14,59 @@ import java.util.List;
 
 /**
  * Class: ChartPatientsByAge
- * Purpose: Generates and displays a histogram showing the distribution of patient ages.
- *          Also exports the chart to PDF with a descriptive summary.
+ * Purpose: Generates a histogram of patient ages from the database.
+ *          Also exports the chart as a PDF with a descriptive summary.
  */
 public class ChartPatientsByAge {
 
     /**
-     * Main method to create and show the patient age histogram
+     * Creates and displays the histogram chart
      */
-
     public static void showChart() {
         try {
-            // Retrieve ages from the database
+            // Retrieve patient ages from the database
             double[] ages = getAges();
 
-            // Create a dataset for the histogram
+            // Create dataset for histogram
             HistogramDataset dataset = new HistogramDataset();
-             // Add a series of data: "Age" is the label, 8 is the number of bins
-            dataset.addSeries("Age", ages, 8);
+            dataset.addSeries("Age", ages, 8); // 8 bins
 
-             // Create the histogram chart
+            // Create the histogram chart
             JFreeChart chart = ChartFactory.createHistogram(
                     "Patient Age Distribution", // Chart title
-                    "Age Range",                // X-axis label
-                    "Number of Patients",       // Y-axis label
-                    dataset,
-                    PlotOrientation.VERTICAL,   // Orientation of bars
-                    false,                      // Include legend? false
-                    true,                       // Show tooltips? true
-                    false                       // URLs? false
+                    "Age Range",               // X-axis label
+                    "Number of Patients",      // Y-axis label
+                    dataset,                   // Dataset
+                    PlotOrientation.VERTICAL,  // Orientation
+                    false,                     // Legend? No
+                    true,                      // Tooltips? Yes
+                    false                      // URLs? No
             );
 
             // Display chart in a JFrame
             displayChart(chart, "Patient Age Distribution");
 
-           // Export chart to PDF with descriptive text
+            // Export chart as PDF with description
             ChartPDFExporter.exportToPDF(chart, "PatientAgeDistribution.pdf",
                     "This histogram shows how patient ages are distributed. " +
                             "It helps visualize dominant age groups in hospital visits.");
 
         } catch (Exception e) {
+            // Print any exceptions for debugging
             e.printStackTrace();
         }
     }
 
     /**
-     * Connects to the database and fetches all patient ages
-     * @return array of ages as double[]
-     * @throws Exception if database connection or query fails
+     * Fetches all patient ages from the database
+     * @return array of ages as doubles
+     * @throws Exception if query fails
      */
-
     private static double[] getAges() throws Exception {
-        List<Double> list = new ArrayList<>();// Temporary list to store ages
-
-         // Connect to database
-        Connection conn = DBConnection.getConnection();
+        List<Double> list = new ArrayList<>();
+        Connection conn = DBConnection.getConnection();  // Connect to DB
         Statement stmt = conn.createStatement();
-
-        // Execute query to fetch ages
-        ResultSet rs = stmt.executeQuery("SELECT age FROM patients;");
+        ResultSet rs = stmt.executeQuery("SELECT age FROM patients;"); // Query ages
 
         // Add each age to the list
         while (rs.next()) list.add(rs.getDouble("age"));
@@ -80,15 +74,19 @@ public class ChartPatientsByAge {
         // Close connection
         conn.close();
 
-        // Convert List<Double> to primitive double[] for histogram dataset
+        // Convert List<Double> to double[] for histogram
         return list.stream().mapToDouble(Double::doubleValue).toArray();
     }
 
+    /**
+     * Displays the given JFreeChart in a JFrame
+     * @param chart chart to display
+     * @param title title of the JFrame
+     */
     private static void displayChart(JFreeChart chart, String title) {
-        JFrame frame = new JFrame(title);      // Create a new window
-        frame.setSize(800, 600);               // Set window size
-        frame.add(new ChartPanel(chart), BorderLayout.CENTER); // Add chart to window
-        frame.setVisible(true); // Show the window
+        JFrame frame = new JFrame(title);                    // Create window
+        frame.setSize(800, 600);                             // Set size
+        frame.add(new ChartPanel(chart), BorderLayout.CENTER); // Add chart panel
+        frame.setVisible(true);                               // Show window
     }
 }
-
